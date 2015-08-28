@@ -1,0 +1,8 @@
+rootProject.name = 'rmq'
+
+include 'client'
+
+include 'server'
+
+include 'shared'
+
