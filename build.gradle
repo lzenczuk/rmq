@@ -16,3 +16,7 @@ subprojects {
         testCompile 'org.hamcrest:hamcrest-all:1.3'
     }
 }
+
+task('runIntegrationEnvironment') << {
+    println "Integration!"
+}

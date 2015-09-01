@@ -19,29 +19,22 @@ public class ServerMain {
         connectionFactory.setHost("localhost");
 
         Connection connection = connectionFactory.newConnection();
-        Channel channel = connection.createChannel();
+        final Channel channel = connection.createChannel();
 
         channel.queueDeclare(Params.QUEUE_NAME, false, false, false, null);
 
         Consumer consumer = new DefaultConsumer(channel){
-            private int messages = 0;
 
             @Override
             public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body) throws IOException {
-                System.out.println("Receive message: "+new String(body, Charset.forName("UTF-8")));
-                if(messages==6){
-                    synchronized (consumerLock) {
-                        consumerLock.notify();
-                    }
-                }
-
-                messages++;
-
+                System.out.println("Receive message: " + new String(body, Charset.forName("UTF-8")));
+                channel.basicAck(envelope.getDeliveryTag(),false);
             }
         };
 
         channel.basicConsume(Params.QUEUE_NAME, consumer);
 
+        // It won't stop now because lack of notify
         synchronized (consumerLock) {
             try {
                 System.out.println("Waiting for messages");
